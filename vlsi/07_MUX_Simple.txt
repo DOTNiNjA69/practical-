@@ -1,0 +1,48 @@
+EXPERIMENT 7: SIMPLE 4:1 MULTIPLEXER
+=====================================
+
+DESIGN CODE
+-----------
+module mux4(input [3:0] d, input [1:0] sel, output reg y);
+
+always @(*) begin
+    if(sel==0)
+        y=d[0];
+    else if(sel==1)
+        y=d[1];
+    else if(sel==2)
+        y=d[2];
+    else
+        y=d[3];
+end
+endmodule
+
+TESTBENCH
+----------
+module mux_tb;
+reg [3:0] d;
+reg [1:0] sel;
+wire y;
+
+mux4 uut(d,sel,y);
+
+initial begin
+    d=4'b1010;
+
+    sel=0; #10;
+    sel=1; #10;
+    sel=2; #10;
+    sel=3; #10;
+
+    $finish;
+end
+initial $monitor("DATA=%b SELECT=%d OUTPUT=%b",d,sel,y);
+endmodule
+
+EASY TO REMEMBER
+----------------
+A multiplexer selects one input and sends it to output.
+sel=00 selects d[0].
+sel=01 selects d[1].
+sel=10 selects d[2].
+sel=11 selects d[3].

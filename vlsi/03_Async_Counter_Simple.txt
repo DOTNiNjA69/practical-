@@ -1,0 +1,44 @@
+EXPERIMENT 3: SIMPLE 3-BIT ASYNCHRONOUS COUNTER
+================================================
+
+DESIGN CODE
+-----------
+module async_counter(input clk,rst, output reg [2:0] q);
+
+always @(posedge clk or posedge rst)
+    if(rst) q[0] <= 0;
+    else    q[0] <= ~q[0];
+
+always @(negedge q[0] or posedge rst)
+    if(rst) q[1] <= 0;
+    else    q[1] <= ~q[1];
+
+always @(negedge q[1] or posedge rst)
+    if(rst) q[2] <= 0;
+    else    q[2] <= ~q[2];
+
+endmodule
+
+TESTBENCH
+----------
+module async_tb;
+reg clk,rst;
+wire [2:0] q;
+
+async_counter uut(clk,rst,q);
+always #5 clk=~clk;
+
+initial begin
+    clk=0; rst=1;
+    #10 rst=0;
+    #160 $finish;
+end
+initial $monitor("COUNT=%b",q);
+endmodule
+
+EASY TO REMEMBER
+----------------
+First bit uses the main clock.
+Second bit uses q[0] as its clock.
+Third bit uses q[1] as its clock.
+Count: 000, 001, 010, 011, 100, 101, 110, 111.

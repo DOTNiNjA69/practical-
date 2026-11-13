@@ -1,0 +1,54 @@
+EXPERIMENT 1: SIMPLE 4-BIT ALU
+=============================
+
+DESIGN CODE
+-----------
+module alu(input [3:0] a,b, input [2:0] sel, output reg [3:0] y);
+
+always @(*) begin
+    case(sel)
+        0: y = a + b;  // Addition
+        1: y = a - b;  // Subtraction
+        2: y = a & b;  // AND
+        3: y = a | b;  // OR
+        4: y = a ^ b;  // XOR
+        5: y = ~a;     // NOT
+        6: y = a + 1;  // Increment
+        7: y = a - 1;  // Decrement
+    endcase
+end
+endmodule
+
+TESTBENCH
+----------
+module alu_tb;
+reg [3:0] a,b;
+reg [2:0] sel;
+wire [3:0] y;
+
+alu uut(a,b,sel,y);
+
+initial begin
+    a=5; b=3;
+
+    sel=0; #10;
+    sel=1; #10;
+    sel=2; #10;
+    sel=3; #10;
+    sel=4; #10;
+    sel=5; #10;
+    sel=6; #10;
+    sel=7; #10;
+
+    $finish;
+end
+
+initial
+    $monitor("A=%d B=%d SEL=%d Y=%d",a,b,sel,y);
+
+endmodule
+
+EASY TO REMEMBER
+----------------
+case(sel) chooses which operation is performed.
+@(*) means output changes whenever an input changes.

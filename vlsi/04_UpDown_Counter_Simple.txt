@@ -1,0 +1,37 @@
+// EXPERIMENT 3: SYNCHRONOUS UP-DOWN COUNTER
+
+module updown_top(
+    input clk_100,
+    input rst,
+    input dir,
+    output reg [2:0] led
+);
+
+reg [25:0] cnt;
+reg slow_clk;
+
+// Clock Divider: 100 MHz to 1 Hz
+always @(posedge clk_100 or posedge rst) begin
+    if(rst) begin
+        cnt <= 0;
+        slow_clk <= 0;
+    end
+    else if(cnt == 49999999) begin
+        cnt <= 0;
+        slow_clk <= ~slow_clk;
+    end
+    else
+        cnt <= cnt + 1;
+end
+
+// Up-Down Counter
+always @(posedge slow_clk or posedge rst) begin
+    if(rst)
+        led <= 3'b000;
+    else if(dir == 1)
+        led <= led + 1;
+    else
+        led <= led - 1;
+end
+
+endmodule

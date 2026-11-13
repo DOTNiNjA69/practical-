@@ -1,0 +1,63 @@
+#include <LPC214x.h>
+#include "LCD.h"
+#include <stdio.h>
+
+void ADCInit(void)
+{
+    // Configure P0.28 and P0.29 as ADC pins
+    PINSEL1 &= 0xF0FFFFFF;
+    PINSEL1 |= 0x05000000;
+}
+
+unsigned int ADC_Read(unsigned char channel)
+{
+    unsigned int adc_data;
+
+    // Configure ADC
+    // PDN = 1, CLKDIV = 14
+    AD0CR = 0x00200E00 | (1 << channel);
+
+    // Start ADC conversion
+    AD0CR |= (1 << 24);
+
+    // Wait until conversion is complete
+    while (!(AD0GDR & 0x80000000));
+
+    // Extract 10-bit ADC result
+    adc_data = (AD0GDR & 0x0000FFC0) >> 6;
+
+    return adc_data;
+}
+
+void delay(unsigned int time)
+{
+    unsigned int i, j;
+
+    for(i = 0; i < time; i++)
+    {
+        for(j = 0; j < 5000; j++);
+    }
+}
+
+int main()
+{
+    unsigned int temp;
+    char buf[17];
+
+    LCD_init();
+    ADCInit();
+
+    while(1)
+    {
+        // Read ADC channel 1 (P0.28)
+        temp = ADC_Read(1);
+
+        // Convert ADC result into hexadecimal string
+        sprintf(buf, "ADC result:0x%03X", temp);
+
+        // Display on LCD
+        LCD_display(1, 1, buf);
+
+        delay(20);
+    }
+}

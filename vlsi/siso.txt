@@ -1,0 +1,38 @@
+// EXPERIMENT 1: SISO SHIFT REGISTER
+
+module siso_top(
+    input clk_100,
+    input rst,
+    input serial_in,
+    output serial_out
+);
+
+reg [25:0] cnt;
+reg slow_clk;
+reg [3:0] data;
+
+// Clock Divider: 100 MHz to 1 Hz
+always @(posedge clk_100 or posedge rst) begin
+    if(rst) begin
+        cnt <= 0;
+        slow_clk <= 0;
+    end
+    else if(cnt == 49999999) begin
+        cnt <= 0;
+        slow_clk <= ~slow_clk;
+    end
+    else
+        cnt <= cnt + 1;
+end
+
+// SISO Shift Register
+always @(posedge slow_clk or posedge rst) begin
+    if(rst)
+        data <= 4'b0000;
+    else
+        data <= {data[2:0], serial_in};
+end
+
+assign serial_out = data[3];
+
+endmodule

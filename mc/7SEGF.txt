@@ -1,0 +1,32 @@
+#include <reg51.h>
+sbit DIG1 = P3^4;
+sbit DIG2 = P3^5;
+unsigned char code seg[16] = {
+    0x3F, 0x06, 0x5B, 0x4F,
+    0x66, 0x6D, 0x7D, 0x07,
+    0x7F, 0x6F, 0x77, 0x7C,
+    0x39, 0x5E, 0x79, 0x71
+};
+void delay(void)
+{
+    unsigned int i, j;
+    for(i = 0; i < 250; i++)
+        for(j = 0; j < 400; j++);
+}
+void main(void)
+{
+    unsigned char n;
+    DIG1 = 1;
+    DIG2 = 1;
+    while(1)
+    {
+        for(n = 0; n < 16; n++)
+        {
+            DIG1 = 1;
+            DIG2 = 1;
+            P2 = seg[n];
+            DIG1 = 0;
+            delay();
+        }
+    }
+}

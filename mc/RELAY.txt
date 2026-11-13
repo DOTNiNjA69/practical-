@@ -1,0 +1,23 @@
+#include <reg51.h>
+sbit RELAY  = P1^0;
+sbit BUZZER = P1^1;
+void delay(void)
+{
+    unsigned int i, j;
+    for(i = 0; i < 500; i++)
+        for(j = 0; j < 1275; j++);
+}
+void main(void)
+{
+    RELAY = 0;
+    BUZZER = 0;
+    while(1)
+    {
+        RELAY = 1;       /* Relay ON */
+        BUZZER = 1;      /* Buzzer ON */
+        delay();
+        RELAY = 0;       /* Relay OFF */
+        BUZZER = 0;      /* Buzzer OFF */
+        delay();
+    }
+}

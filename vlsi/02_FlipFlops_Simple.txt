@@ -1,0 +1,144 @@
+// JK FLIP-FLOP WITH CLOCK DIVIDER
+
+module jk_ff(
+    input clk_100,
+    input rst,
+    input j,
+    input k,
+    output reg q
+);
+
+reg [25:0] cnt;
+reg slow_clk;
+
+// CLOCK DIVIDER: 100 MHz TO 1 Hz
+always @(posedge clk_100 or posedge rst) begin
+    if(rst) begin
+        cnt <= 0;
+        slow_clk <= 0;
+    end
+    else if(cnt == 49999999) begin
+        cnt <= 0;
+        slow_clk <= ~slow_clk;
+    end
+    else
+        cnt <= cnt + 1;
+end
+
+// JK FLIP-FLOP
+always @(posedge slow_clk or posedge rst) begin
+    if(rst)
+        q <= 0;
+    else if(j==0 && k==0)
+        q <= q;       // Hold
+    else if(j==0 && k==1)
+        q <= 0;       // Reset
+    else if(j==1 && k==0)
+        q <= 1;       // Set
+    else
+        q <= ~q;      // Toggle
+end
+
+endmodule
+
+
+// JK TESTBENCH
+
+module jk_tb;
+
+reg clk_100,rst,j,k;
+wire q;
+
+jk_ff uut(clk_100,rst,j,k,q);
+
+// 100 MHz simulation clock
+always #5 clk_100 = ~clk_100;
+
+initial begin
+    clk_100=0;
+    rst=1;
+    j=0;
+    k=0;
+
+    #20 rst=0;
+
+    j=0; k=0; #100;
+    j=0; k=1; #100;
+    j=1; k=0; #100;
+    j=1; k=1; #200;
+
+    $finish;
+end
+
+initial
+    $monitor("J=%b K=%b Q=%b",j,k,q);
+
+endmodule
+
+
+// T FLIP-FLOP WITH CLOCK DIVIDER
+
+module t_ff(
+    input clk_100,
+    input rst,
+    input t,
+    output reg q
+);
+
+reg [25:0] cnt;
+reg slow_clk;
+
+// CLOCK DIVIDER: 100 MHz TO 1 Hz
+always @(posedge clk_100 or posedge rst) begin
+    if(rst) begin
+        cnt <= 0;
+        slow_clk <= 0;
+    end
+    else if(cnt == 49999999) begin
+        cnt <= 0;
+        slow_clk <= ~slow_clk;
+    end
+    else
+        cnt <= cnt + 1;
+end
+
+// T FLIP-FLOP
+always @(posedge slow_clk or posedge rst) begin
+    if(rst)
+        q <= 0;
+    else if(t)
+        q <= ~q;      // Toggle
+end
+
+endmodule
+
+
+// T TESTBENCH
+
+module t_tb;
+
+reg clk_100,rst,t;
+wire q;
+
+t_ff uut(clk_100,rst,t,q);
+
+// 100 MHz simulation clock
+always #5 clk_100 = ~clk_100;
+
+initial begin
+    clk_100=0;
+    rst=1;
+    t=0;
+
+    #20 rst=0;
+
+    t=0; #200;
+    t=1; #400;
+
+    $finish;
+end
+
+initial
+    $monitor("T=%b Q=%b",t,q);
+
+endmodule
