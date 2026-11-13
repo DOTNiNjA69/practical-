@@ -35,3 +35,44 @@ always @(posedge slow_clk or posedge rst) begin
 end
 
 endmodule
+
+//TESTBENCH
+
+
+`timescale 1ns / 1ps
+
+module updown_tb;
+
+reg clk_100, rst, dir;
+wire [2:0] led;
+
+updown_top uut(clk_100, rst, dir, led);
+
+// 100 MHz Clock Generation
+always #5 clk_100 = ~clk_100;
+
+initial begin
+    clk_100 = 0;
+    rst = 1;
+    dir = 1;
+
+    #20;
+    rst = 0;
+
+    // Up Counting
+    dir = 1;
+    #4000000000;
+
+    // Down Counting
+    dir = 0;
+    #4000000000;
+
+    $finish;
+end
+
+initial begin
+    $monitor("Time=%0t Direction=%b Count=%b",
+             $time, dir, led);
+end
+
+endmodule
