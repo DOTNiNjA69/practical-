@@ -42,3 +42,38 @@ First bit uses the main clock.
 Second bit uses q[0] as its clock.
 Third bit uses q[1] as its clock.
 Count: 000, 001, 010, 011, 100, 101, 110, 111.
+
+
+
+//TESTBENCH
+
+
+`timescale 1ns / 1ps
+
+module async_tb;
+
+reg clk, rst;
+wire [2:0] q;
+
+async_counter uut(clk, rst, q);
+
+// Clock Generation
+always #5 clk = ~clk;
+
+initial begin
+    clk = 0;
+    rst = 1;
+
+    #10 rst = 0;
+
+    #160;
+    $finish;
+end
+
+initial begin
+    $monitor("Time=%0t Reset=%b Count=%b",
+              $time, rst, q);
+end
+
+endmodule
+
